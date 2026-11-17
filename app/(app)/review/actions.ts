@@ -85,7 +85,9 @@ export async function saveSelfAppraisal(_prev: ActionState, formData: FormData):
 
   revalidatePath("/review");
   revalidatePath("/dashboard");
-  if (intent === "save") return { success: "Draft saved. You can come back and finish it later." };
+  // Return what was typed: React resets a form after its action, and the form
+  // re-fills itself from `fields`. Without this, a saved draft would look blank.
+  if (intent === "save") return { success: "Draft saved. You can come back and finish it later.", fields };
 
   // Email the manager. This is a side effect: if it fails, the submission still stands.
   const { data: manager } = await supabase

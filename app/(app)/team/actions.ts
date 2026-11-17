@@ -176,5 +176,7 @@ export async function saveManagerReview(
   }
 
   refresh(employeeId);
-  return { success: intent === "complete" ? "Review completed." : "Saved. The review is now marked Manager Reviewed. Complete it when you're ready." };
+  if (intent === "complete") return { success: "Review completed." };
+  // Keep what was typed visible after saving (React resets forms after an action).
+  return { success: "Saved. The review is now marked Manager Reviewed. Complete it when you're ready.", fields };
 }
