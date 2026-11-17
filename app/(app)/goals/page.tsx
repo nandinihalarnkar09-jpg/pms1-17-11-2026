@@ -61,6 +61,11 @@ export default async function MyGoalsPage() {
               </p>
             )}
             {locked && <p className="mt-3 text-sm text-slate-600">Your self-appraisal is submitted, so goals are locked.</p>}
+            {!locked && summary.submitted > 0 && pendingCount === 0 && (
+              <p className="mt-3 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-800">
+                Submitted. {summary.submitted} goal(s) are waiting for your manager&apos;s approval. You&apos;ll get an email if one is sent back.
+              </p>
+            )}
           </Card>
 
           {goals.length === 0 ? (
@@ -110,7 +115,7 @@ export default async function MyGoalsPage() {
               <GoalForm action={createGoal} remaining={100 - summary.total} cycleStart={cycle.start_date} cycleEnd={cycle.end_date} />
             </Card>
           ) : (
-            !locked && !summary.allApproved && (
+            !locked && !summary.allApproved && pendingCount > 0 && (
               <Card title="Add a goal">
                 <p className="text-sm text-slate-600">You have allocated all 100. To add another goal, lower the weightage of a draft goal first.</p>
               </Card>

@@ -6,11 +6,12 @@ import { loadRatedGoals } from "@/lib/reviews";
 import { formatDate } from "@/lib/labels";
 import { isUuid } from "@/lib/validation";
 import type { Employee, Goal, Review } from "@/lib/types";
-import { Card, EmptyState, GoalStatusBadge, PageHeader, ReviewStatusBadge, buttonClass } from "@/components/ui";
+import { Card, EmptyState, GoalStatusBadge, PageHeader, ReviewStatusBadge } from "@/components/ui";
 import { ReviewView } from "@/components/review-view";
 import { approveAllGoals, approveGoal, saveManagerReview, sendBackGoal } from "../actions";
 import { SendBackForm } from "./send-back-form";
 import { ManagerReviewForm } from "./manager-review-form";
+import { SubmitButton } from "@/components/submit-button";
 
 export default async function TeamMemberPage({ params }: PageProps<"/team/[employeeId]">) {
   const { employeeId } = await params;
@@ -59,7 +60,7 @@ export default async function TeamMemberPage({ params }: PageProps<"/team/[emplo
           <h2 className="text-lg font-semibold text-slate-900">Goals <span className="text-sm font-normal text-slate-500">· total {summary.total} / 100</span></h2>
           {summary.submitted > 1 && (
             <form action={approveAllGoals.bind(null, employeeId)}>
-              <button type="submit" className={buttonClass}>Approve all {summary.submitted} submitted</button>
+              <SubmitButton pendingText="Approving…">Approve all {summary.submitted} submitted</SubmitButton>
             </form>
           )}
         </div>
@@ -81,7 +82,7 @@ export default async function TeamMemberPage({ params }: PageProps<"/team/[emplo
                 {g.status === "submitted" && (
                   <div className="mt-3 flex flex-wrap items-start gap-2">
                     <form action={approveGoal.bind(null, employeeId, g.id)}>
-                      <button type="submit" className={buttonClass}>Approve</button>
+                      <SubmitButton pendingText="Approving…">Approve</SubmitButton>
                     </form>
                     <SendBackForm action={sendBackGoal.bind(null, employeeId, g.id)} />
                   </div>
