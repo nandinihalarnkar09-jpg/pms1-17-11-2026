@@ -15,6 +15,7 @@ import {
 } from "@/components/ui";
 import { GoalForm } from "./goal-form";
 import { SubmitGoalsForm } from "./submit-goals-form";
+import { SubmitButton } from "@/components/submit-button";
 import { createGoal, deleteGoal } from "./actions";
 
 export default async function MyGoalsPage() {
@@ -93,7 +94,7 @@ export default async function MyGoalsPage() {
                     <div className="mt-3 flex gap-2">
                       <Link href={`/goals/${g.id}/edit`} className={secondaryButtonClass}>Edit</Link>
                       <form action={deleteGoal.bind(null, g.id)}>
-                        <button type="submit" className={dangerButtonClass}>Delete</button>
+                        <SubmitButton className={dangerButtonClass} pendingText="Deleting…">Delete</SubmitButton>
                       </form>
                     </div>
                   )}

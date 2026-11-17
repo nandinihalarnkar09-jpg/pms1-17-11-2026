@@ -36,20 +36,44 @@ The SQL was executed in a local Postgres (PGlite) with a stand-in for Supabase's
 - After submitting, the employee can't edit their self-appraisal; after completing, the manager can't edit the review.
 - HR can read everything but cannot edit goals or reviews.
 
+## Live end-to-end test on the Vercel URL (17 Nov 2026)
+
+The full Section 10 flow was run on https://pms1-17-11-2026.vercel.app, then the data was reset.
+
+| Check | Result |
+|---|---|
+| HR creates "FY 2026–27 Annual", opens it; a second open cycle is refused | ✅ |
+| HR adds an employee with a manager, edits them; a manager loop (A→B→A) is refused | ✅ |
+| Employee adds goals; total 90 is refused ("must total exactly 100"); total 100 submits | ✅ |
+| Weightage over 100 is blocked; goal edit and delete work | ✅ |
+| Manager sends a goal back with a required comment; employee edits and resubmits; manager approves | ✅ |
+| Empty self-appraisal is refused; completed one submits and locks | ✅ |
+| **Email "… submitted their self-appraisal" delivered to the manager's inbox** (Resend log: Delivered) | ✅ |
+| Manager saves (Manager Reviewed), then completes; incomplete completion is refused | ✅ |
+| HR report shows Completed, rating spread and CSV download | ✅ |
+| Another employee opening that review / team page / HR pages by URL → "Not found"; CSV → 403 | ✅ |
+| Signed-out visitor → redirected to /sign-in; unknown login → "Your account is not yet set up" | ✅ |
+| Phone viewport (375 px): no horizontal scrolling, all pages usable | ✅ |
+
+**Bugs found by this test and fixed:**
+- The HR employee list and report were empty because Supabase can't embed `employees` inside `employees`. Manager names are now looked up in code (`withManagerNames` in `lib/data.ts`).
+- "Save" on the self-appraisal and manager review blanked the form (React resets forms after an action). Actions now return the typed values, and the rating dropdowns are keyed so they keep their selection.
+- Every action took ~8 s because Vercel ran in the US and Supabase is in Singapore. `vercel.json` now pins functions to `sin1`, and actions take under 1 s.
+
 ## Testing checklist (Section 12)
 
-- [ ] HR / Manager / Employee logins work
-- [ ] Create a review cycle and open it
-- [ ] Add an employee and assign a manager
-- [ ] Create, edit and delete a goal
-- [ ] Weightage validation triggers when the total is not 100
-- [ ] Submit goals for approval
-- [ ] Manager approves, and sends back with a comment
-- [ ] Submit a self-appraisal
-- [ ] Manager review saves and completes
-- [ ] Email received
-- [ ] Employee A cannot open Employee B's review by editing the URL
-- [ ] All of the above on the live Vercel URL
+- [x] HR / Manager / Employee logins work
+- [x] Create a review cycle and open it
+- [x] Add an employee and assign a manager
+- [x] Create, edit and delete a goal
+- [x] Weightage validation triggers when the total is not 100
+- [x] Submit goals for approval
+- [x] Manager approves, and sends back with a comment
+- [x] Submit a self-appraisal
+- [x] Manager review saves and completes
+- [x] Email received
+- [x] Employee A cannot open Employee B's review by editing the URL
+- [x] All of the above on the live Vercel URL
 
 ## Troubleshooting
 

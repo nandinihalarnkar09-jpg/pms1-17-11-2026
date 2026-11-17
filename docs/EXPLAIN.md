@@ -16,6 +16,7 @@ Your instructor will pick a file at random and ask what it does. For each file b
 | File | What it does |
 |---|---|
 | `proxy.ts` | Runs before every request. In Next.js 16, `middleware.ts` was renamed `proxy.ts`. Public routes: `/`, `/sign-in`, `/sign-up`; everything else needs a Clerk session (`auth.protect()`). |
+| `vercel.json` | Pins Vercel's server functions to Singapore (`sin1`), the same region as the Supabase database, so each query is fast. |
 | `next.config.ts` | Next.js settings. Cache Components is **off on purpose**: every page depends on who is signed in, so pages render fresh per request. |
 | `.env.example` | The list of environment variables with fake values. The real ones are in `.env.local` (git-ignored) and in Vercel. |
 | `.gitignore` | Keeps `node_modules`, build output and **all `.env*` files except `.env.example`** out of git. |
@@ -86,4 +87,6 @@ Your instructor will pick a file at random and ask what it does. For each file b
 - **Where does the Clerk user get linked to an employee?** `lib/session.ts`, on the first sign-in, by matching email, on the server, with the admin client.
 - **What is `"use server"` / `"use client"`?** `"use server"` marks Server Actions (functions the browser can call that run on the server). `"use client"` marks components that run in the browser (needed for hooks like `useActionState`).
 - **What is `revalidatePath`?** It tells Next.js to re-render that page with fresh data after a change.
+- **Why does a form keep its values after "Save"?** React resets a form after its action runs. The save actions return the typed values (`fields`), the form re-fills from them, and the rating `<select>` has a `key` so it re-creates itself with the saved choice.
+- **Why not show the manager's name with a Supabase join?** `employees.manager_id` points back to `employees`, so the API can't tell which direction to join. We load everyone and map `manager_id` to a name in code (`withManagerNames`).
 - **Why `notFound()` rather than "access denied"?** It doesn't confirm that someone else's record exists.
