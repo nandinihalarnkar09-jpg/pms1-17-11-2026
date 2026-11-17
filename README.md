@@ -26,7 +26,7 @@ The Clerk instance is in **development mode**. Any email containing `+clerk_test
 | Employee | Priya Sharma | `priya+clerk_test@example.com` → code `424242` |
 | Employee | Rahul Nair | `rahul+clerk_test@example.com` → code `424242` |
 
-> **First time for each test account:** use **Sign up** (not Sign in) with the test email. If Clerk asks for a password, pick any; the email code is `424242`. After that, Sign in works normally. Use a private/incognito window, or sign out, to switch between users.
+> **First time for each test account:** click **Sign up** (not Sign in) → enter the test email → choose any password (e.g. `Pms1-demo-2026`) → enter the code `424242`. After that, **Sign in** works with the same email and code. To switch users, sign out from the avatar menu or use a private/incognito window.
 >
 > To add a new person: sign in as HR → **Employees → Add employee**. Use the exact email they'll sign in with. Their first sign-in links their login to that record.
 >

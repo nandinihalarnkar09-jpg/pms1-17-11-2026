@@ -53,7 +53,14 @@ export const REVIEW_STATUS_ORDER: ReviewStatus[] = [
 export function formatDate(value: string | null | undefined): string {
   if (!value) return "—";
   // Dates from Postgres arrive as "2027-03-31" (date) or ISO timestamps.
-  const d = new Date(value.length === 10 ? `${value}T00:00:00` : value);
+  // A plain date is pinned to midday UTC so it shows the same calendar day everywhere.
+  const d = new Date(value.length === 10 ? `${value}T12:00:00Z` : value);
   if (Number.isNaN(d.getTime())) return value;
-  return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  // Servers run in UTC, so say explicitly that dates are shown in India time.
+  return d.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Asia/Kolkata",
+  });
 }
