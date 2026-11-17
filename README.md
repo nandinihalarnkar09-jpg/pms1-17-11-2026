@@ -11,7 +11,7 @@ A web app that runs a company's appraisal cycle end to end. HR opens a cycle, em
 | [docs/data-model.md](docs/data-model.md) | ER diagram, status workflows, and who can see what |
 | [docs/EXPLAIN.md](docs/EXPLAIN.md) | What every file does, plus likely demo questions |
 | [docs/BUILD_LOG.md](docs/BUILD_LOG.md) | The lab manual's steps, how each was done, and how to verify it |
-| [supabase/](supabase) | The SQL: `01_schema.sql`, `02_security.sql`, `03_seed.sql` |
+| [supabase/](supabase) | The SQL: `01_schema.sql`, `02_security.sql`, `03_seed.sql`, `04_reset_demo.sql` |
 
 ---
 
@@ -26,7 +26,11 @@ The Clerk instance is in **development mode**. Any email containing `+clerk_test
 | Employee | Priya Sharma | `priya+clerk_test@example.com` → code `424242` |
 | Employee | Rahul Nair | `rahul+clerk_test@example.com` → code `424242` |
 
+> **First time for each test account:** use **Sign up** (not Sign in) with the test email. If Clerk asks for a password, pick any; the email code is `424242`. After that, Sign in works normally. Use a private/incognito window, or sign out, to switch between users.
+>
 > To add a new person: sign in as HR → **Employees → Add employee**. Use the exact email they'll sign in with. Their first sign-in links their login to that record.
+>
+> **Before the real demo:** run `supabase/04_reset_demo.sql` in the Supabase SQL Editor to clear rehearsal cycles, goals and reviews. Employees are kept.
 
 ## Demo flow (lab manual, Section 10)
 
