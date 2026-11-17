@@ -46,7 +46,7 @@ export function EmployeeForm({
         </div>
         <div>
           <label htmlFor="manager_id" className={labelClass}>Manager</label>
-          <select id="manager_id" name="manager_id" className={inputClass} defaultValue={v("manager_id")}>
+          <select key={`m-${v("manager_id")}`} id="manager_id" name="manager_id" className={inputClass} defaultValue={v("manager_id")}>
             <option value="">No manager</option>
             {managers.map((m) => (
               <option key={m.id} value={m.id}>{m.full_name}{m.designation ? ` · ${m.designation}` : ""}</option>
@@ -55,7 +55,7 @@ export function EmployeeForm({
         </div>
         <div>
           <label htmlFor="role" className={labelClass}>Role</label>
-          <select id="role" name="role" className={inputClass} defaultValue={v("role") || "employee"}>
+          <select key={`r-${v("role")}`} id="role" name="role" className={inputClass} defaultValue={v("role") || "employee"}>
             {(Object.keys(ROLE_LABELS) as (keyof typeof ROLE_LABELS)[]).map((r) => (
               <option key={r} value={r}>{ROLE_LABELS[r]}</option>
             ))}
