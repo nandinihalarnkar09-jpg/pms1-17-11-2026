@@ -1,7 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { buildProgressRows, type ProgressReview, type ProgressRow } from "./data";
-import type { Goal, ReviewCycle } from "./types";
+import { buildProgressRows, withManagerNames, type ProgressReview, type ProgressRow } from "./data";
+import type { Employee, Goal, ReviewCycle } from "./types";
 
 /** Company-wide completion data for one cycle (HR only: RLS lets HR read everything). */
 export async function loadReport(
@@ -15,12 +15,7 @@ export async function loadReport(
   if (!cycle) return { cycles, cycle: null, rows: [] };
 
   const [{ data: employees }, { data: goals }, { data: reviews }] = await Promise.all([
-    supabase
-      .from("employees")
-      .select("*, manager:employees!employees_manager_id_fkey(full_name)")
-      .eq("is_active", true)
-      .order("department")
-      .order("full_name"),
+    supabase.from("employees").select("*").order("department").order("full_name"),
     supabase.from("goals").select("employee_id, status, weightage").eq("cycle_id", cycle.id),
     supabase
       .from("reviews")
@@ -28,11 +23,13 @@ export async function loadReport(
       .eq("cycle_id", cycle.id),
   ]);
 
+  const everyone = (employees ?? []) as Employee[];
+  const active = withManagerNames(everyone.filter((e) => e.is_active), everyone);
   return {
     cycles,
     cycle,
     rows: buildProgressRows(
-      (employees ?? []) as ProgressRow["employee"][],
+      active,
       (goals ?? []) as Goal[],
       (reviews ?? []) as ProgressReview[],
     ),

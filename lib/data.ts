@@ -12,6 +12,22 @@ export async function getOpenCycle(supabase: SupabaseClient): Promise<ReviewCycl
   return data;
 }
 
+/**
+ * Adds each employee's manager name. We look names up in code rather than
+ * with a Supabase embed, because embedding `employees` inside `employees`
+ * (a self-referencing foreign key) is ambiguous to the API and returns an error.
+ */
+export function withManagerNames<T extends Pick<Employee, "manager_id">>(
+  employees: T[],
+  everyone: Pick<Employee, "id" | "full_name">[],
+): (T & { manager: { full_name: string } | null })[] {
+  const nameById = new Map(everyone.map((e) => [e.id, e.full_name]));
+  return employees.map((e) => ({
+    ...e,
+    manager: e.manager_id ? { full_name: nameById.get(e.manager_id) ?? "—" } : null,
+  }));
+}
+
 /** Totals and counts for one employee's goals in a cycle. */
 export function summariseGoals(goals: Pick<Goal, "status" | "weightage">[]) {
   const total = goals.reduce((sum, g) => sum + g.weightage, 0);

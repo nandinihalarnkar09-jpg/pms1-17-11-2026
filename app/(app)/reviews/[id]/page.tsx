@@ -23,12 +23,18 @@ export default async function ReviewDetailPage({ params }: PageProps<"/reviews/[
   const me = await requireMe();
   const supabase = createUserClient();
 
-  const { data: review } = await supabase
+  const { data: found } = await supabase
     .from("reviews")
-    .select("*, employee:employees!reviews_employee_id_fkey(full_name, designation), cycle:review_cycles(name)")
+    .select("*, cycle:review_cycles(name)")
     .eq("id", id)
-    .maybeSingle<ReviewWithNames>();
-  if (!review) notFound();
+    .maybeSingle<Omit<ReviewWithNames, "employee">>();
+  if (!found) notFound();
+  const { data: employee } = await supabase
+    .from("employees")
+    .select("full_name, designation")
+    .eq("id", found.employee_id)
+    .maybeSingle<Pick<Employee, "full_name" | "designation">>();
+  const review: ReviewWithNames = { ...found, employee };
 
   const goals = await loadRatedGoals(supabase, review.employee_id, review.cycle_id, review.id);
   // The employee sees the manager's part only after completion. Their manager and HR can always see it.

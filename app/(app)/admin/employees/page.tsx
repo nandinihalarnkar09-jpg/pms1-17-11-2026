@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireHr } from "@/lib/session";
 import { createUserClient } from "@/lib/supabase/server";
 import { ROLE_LABELS } from "@/lib/labels";
+import { withManagerNames } from "@/lib/data";
 import type { Employee } from "@/lib/types";
 import { Badge, EmptyState, PageHeader, buttonClass } from "@/components/ui";
 
@@ -10,12 +11,14 @@ type Row = Employee & { manager: { full_name: string } | null };
 export default async function EmployeesPage() {
   await requireHr();
   const supabase = createUserClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("employees")
-    .select("*, manager:employees!employees_manager_id_fkey(full_name)")
+    .select("*")
     .order("is_active", { ascending: false })
     .order("full_name");
-  const employees = (data ?? []) as Row[];
+  if (error) throw new Error(error.message);
+  const all = (data ?? []) as Employee[];
+  const employees: Row[] = withManagerNames(all, all);
 
   return (
     <>
