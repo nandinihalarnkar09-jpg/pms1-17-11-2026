@@ -59,33 +59,9 @@ The full Section 10 flow was run on https://pms1-17-11-2026.vercel.app, then the
 - The HR employee list and report were empty because Supabase can't embed `employees` inside `employees`. Manager names are now looked up in code (`withManagerNames` in `lib/data.ts`).
 - "Save" on the self-appraisal and manager review blanked the form (React resets forms after an action). Actions now return the typed values, and the rating dropdowns are keyed so they keep their selection.
 - Every action took ~8 s because Vercel ran in the US and Supabase is in Singapore. `vercel.json` now pins functions to `sin1`, and actions take under 1 s.
+- Dates were formatted in the server's UTC day (an evening submission in India showed yesterday's date). They are now shown in India time (`lib/labels.ts`).
 
-## Live test on the production URL (17–18 Nov 2026)
-
-The full Section 10 flow was run on https://pms1-17-11-2026.vercel.app as HR, manager and employee:
-
-| Check | Result |
-|---|---|
-| HR creates "FY 2026–27 Annual" and opens it | ✅ Draft → Open |
-| HR adds an employee with a manager | ✅ appears in the directory and in the manager's team |
-| Employee adds goals totalling 90 and submits | ✅ refused: "Your weightages add up to 90. They must total exactly 100" |
-| Employee adds a third goal (total 100) and submits | ✅ all Submitted; manager emailed |
-| Manager sends one goal back with a comment | ✅ Sent back, comment shown to the employee |
-| Employee edits and resubmits; manager approves | ✅ all Approved |
-| Empty self-appraisal submit | ✅ refused with a clear message |
-| Self-appraisal submitted | ✅ status Self-Appraisal Submitted; **email Delivered** (Resend log) |
-| Manager saves (Manager Reviewed), then completes | ✅ Completed; incomplete Complete is refused |
-| HR report + CSV | ✅ Completed with ratings; CSV downloads |
-| Rahul opens Priya's `/reviews/<id>` and `/team/<id>` | ✅ Not found, nothing leaked |
-| Employee/manager open `/admin/*`, CSV | ✅ 404 / 403 |
-| Signed-out visitor | ✅ landing page public; protected pages redirect to `/sign-in` |
-| Every page for each role loads with no errors | ✅ |
-
-**Bugs found during the live test, and fixed:**
-1. HR employee list and report appeared empty. The API can't embed `employees` inside `employees`, so manager names are now resolved in code.
-2. Actions took 8–10 s. The Vercel functions ran in the US while the database is in Singapore; `vercel.json` now pins them to `sin1`, and actions take under 1 s.
-3. "Save" on the self-appraisal or manager review blanked the form, so a second save could wipe the draft. The form now keeps exactly what was typed, dropdowns included.
-4. Dates showed the UTC day; they now show India time.
+**Re-checked on 18 Nov 2026 after the fixes:** draft saves keep text and ratings across repeated saves and a page reload; every page loads without errors for HR, manager and employee; the production domain is public to signed-out visitors; the database was reset to the four seed employees.
 
 ## Testing checklist (Section 12)
 
